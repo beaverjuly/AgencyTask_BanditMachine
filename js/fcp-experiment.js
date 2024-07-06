@@ -9,8 +9,21 @@ const style = "width:auto; height:auto; max-width:100%; max-height:80vh;";
 const probs = [
   [0.90, 0.10],
   [0.70, 0.30],
-  [0.50, 0.50],
 ]
+
+// Generate the change points for easy and hard trials
+function generateChangePoints() {
+  let changePoints = [];
+  let totalTrials = 0;
+  while (totalTrials < 180) {
+    let changePoint = Math.floor(Math.random() * 8) + 28; // Random number between 28 and 35
+    if (totalTrials + changePoint > 180) break;
+    changePoints.push(totalTrials + changePoint);
+    totalTrials += changePoint;
+  }
+  return changePoints;
+}
+
 
 // Define reward values.
 const rewards = [10, 0];
@@ -21,7 +34,6 @@ const bonus_offers = [0, 1, 2, 3, 4, 5, 6];
 // Define arcade colors.
 const arcade_colors = jsPsych.randomization.shuffle([
   jsPsych.randomization.shuffle(["#D8271C", "#741CD8"]),    // red, purple
-  jsPsych.randomization.shuffle(["#3386FF", "#D89F1C"]),    // blue, orange
   jsPsych.randomization.shuffle(["#1CD855", "#FA92F8"]),    // green, pink
 ]);
 
@@ -32,7 +44,7 @@ const arcade_colors = jsPsych.randomization.shuffle([
 // Define beep test trial.
 var beep_test = {
   type: 'audio-keyboard-response',
-  stimulus: 'static/audio/beep_loop.wav',
+  stimulus: 'audio/beep_loop.wav',
   choices: jsPsych.ALL_KEYS,
   prompt: 'Make sure your sound is turned on. </p> Then, press the space bar to proceed to the audio test.',
 };
@@ -40,7 +52,7 @@ var beep_test = {
 // Define audio test trial 1.
 var audio_test_1 = {
   type: 'audio-test',
-  stimulus: 'static/audio/turtle.wav',
+  stimulus: 'audio/turtle.wav',
   choices: ['repeat', 'fish', 'tiger', 'turtle', 'shark'],
   correct_answer: 3,
   prompt: 'Click on the word that you just heard.',
@@ -48,18 +60,18 @@ var audio_test_1 = {
   margin_vertical: '40px',
   margin_horizontal: '10px',
   button_html: [
-    '<img src="static/img/replay.png" height="200px" width="200px"/>',
-    '<img src="static/img/fish.png" height="200px" width="200px"/>',
-    '<img src="static/img/tiger.png" height="200px" width="200px"/>',
-    '<img src="static/img/turtle.png" height="200px" width="200px"/>',
-    '<img src="static/img/shark.png" height="200px" width="200px"/>'
+    '<img src="img/replay.png" height="200px" width="200px"/>',
+    '<img src="img/fish.png" height="200px" width="200px"/>',
+    '<img src="img/tiger.png" height="200px" width="200px"/>',
+    '<img src="img/turtle.png" height="200px" width="200px"/>',
+    '<img src="img/shark.png" height="200px" width="200px"/>'
   ],
   post_trial_gap: 1000
 };
 
 var audio_test_2 = {
   type: 'audio-test',
-  stimulus: 'static/audio/shark.wav',
+  stimulus: 'audio/shark.wav',
   choices: ['repeat', 'turtle', 'shark', 'fish', 'tiger'],
   correct_answer: 2,
   prompt: 'Again, click on the word that you just heard.',
@@ -67,11 +79,11 @@ var audio_test_2 = {
   margin_vertical: '40px',
   margin_horizontal: '10px',
   button_html: [
-    '<img src="static/img/replay.png" height="200px" width="200px"/>',
-    '<img src="static/img/turtle.png" height="200px" width="200px"/>',
-    '<img src="static/img/shark.png" height="200px" width="200px"/>',
-    '<img src="static/img/fish.png" height="200px" width="200px"/>',
-    '<img src="static/img/tiger.png" height="200px" width="200px"/>'
+    '<img src="img/replay.png" height="200px" width="200px"/>',
+    '<img src="img/turtle.png" height="200px" width="200px"/>',
+    '<img src="img/shark.png" height="200px" width="200px"/>',
+    '<img src="img/fish.png" height="200px" width="200px"/>',
+    '<img src="img/tiger.png" height="200px" width="200px"/>'
   ],
   post_trial_gap: 1000
 };
@@ -86,6 +98,27 @@ function returnReward(p) {
   return Math.random() < p ? rewards[0] : rewards[1];
 }
 
+// Generate change points
+const easyChangePoints = generateChangePoints();
+const hardChangePoints = generateChangePoints();
+
+// Define trial types
+const trialTypes = [];
+let easyCount = 0;
+let hardCount = 0;
+
+for (let i = 0; i < 180; i++) {
+  if (i % 2 === 0 && easyCount < easyChangePoints.length) {
+    trialTypes.push('easy');
+    easyCount++;
+  } else if (hardCount < hardChangePoints.length) {
+    trialTypes.push('hard');
+    hardCount++;
+  }
+
+  if (trialTypes.length >= 180) break;
+}
+
 // Define block structure.
 const factors = {
   context: [0, 1, 2],
@@ -96,41 +129,42 @@ const factors = {
 var fcp_trials = [];
 var trial_no = 0;
 
-for (let i = 0; i < 15; i++) {
+// Iterate over trial types and construct trials
+trialTypes.forEach(trialType => {
+  let context = (trialType === 'easy') ? 0 : 1;
 
-  // Define block structure.
-  while (true) {
+  // Shuffle trial order
+  var block = jsPsych.randomization.factorial(factors, 1);
 
-    // Shuffle trial order
-    var block = jsPsych.randomization.factorial(factors, 1);
+  // Check maximum sequence length
+  const seqmax = longestSequence(block.map(a => a.context));
 
-    // Check maximum sequence length.
+  // Ensure longest sequence is length = 4
+  while (seqmax >= 5) {
+    block = jsPsych.randomization.factorial(factors, 1);
     const seqmax = longestSequence(block.map(a => a.context));
-
-    // Accept if longest sequence is length = 4.
-    if ( seqmax < 5 ) { break };
-
   }
 
-  // Iterate over trials.
+  // Iterate over block trials
   block.forEach((info) => {
+    info.context = context;
 
-    // Define trial information.
+    // Define trial information
     if (Math.random() < 0.5) {
       info.correct = 1;
-      info.arcade_ids = [ 2 * info.context, 2 * info.context + 1 ];
+      info.arcade_ids = [2 * info.context, 2 * info.context + 1];
       info.arcade_outcomes = probs[info.context].map(returnReward);
       info.arcade_colors = arcade_colors[info.context];
       info.arcade_probs = probs[info.context];
     } else {
       info.correct = 0;
-      info.arcade_ids = [ 2 * info.context + 1, 2 * info.context ];
+      info.arcade_ids = [2 * info.context + 1, 2 * info.context];
       info.arcade_outcomes = probs[info.context].slice().reverse().map(returnReward);
       info.arcade_colors = arcade_colors[info.context].slice().reverse();
       info.arcade_probs = probs[info.context].slice().reverse();
     }
 
-    // Construct trial.
+    // Construct trial
     const trial = {
       type: 'fcp-trial',
       bonus_offer: info.bonus_offer,
@@ -145,77 +179,28 @@ for (let i = 0; i < 15; i++) {
         arcade_id_R: info.arcade_ids[1],
         phase: 'experiment',
         trial: trial_no + 1,
-        block: Math.floor(trial_no / 45) + 1
+        block: Math.floor(trial_no / 45) + 1,
+        trial_type: trialType
       },
     }
 
-    // Define looping node.
+    // Define looping node
     const trial_node = {
       timeline: [trial],
       loop_function: function(data) {
+        // Custom loop logic if needed
       }
     }
 
-    // Append trial.
+    // Append trial
     fcp_trials.push(trial_node);
 
     // Increment trial counter
     trial_no++;
 
   });
+});
 
-}
-
-//------------------------------------//
-// Define transition screens.
-//------------------------------------//
-
- // Define full screen enter.
- var fullscreen = {
-  type: 'fullscreen',
-  fullscreen_mode: true
-};
-
-
-// Define ready screen.
-var ready = {
-  type: 'audio-instructions',
-  prompt: [
-    `<img src="static/img/instructions/ready.png" style="${style}"></img>`,
-  ],
-  stimulus: ['static/audio/ready.wav'],
-  choices: ['Start real game!'],
-}
-
-// Define break.
-var pause = {
-  type: 'audio-instructions',
-  prompt: [
-    `<img src="static/img/instructions/pause.png" style="${style}"></img>`,
-  ],
-  stimulus: ['static/audio/pause.wav'],
-  choices: ['Next'],
-}
-
-// Define finish screen.
-var finished = {
-  type: 'audio-instructions',
-  prompt: [
-    `<img src="static/img/instructions/finish.png" style="${style}"></img>`,
-  ],
-  stimulus: ['static/audio/finished.wav'],
-  choices: ['Next'],
-}
-
-// End screen
-var end_screen = {
-  type: 'audio-instructions',
-  prompt: [
-    `<img src="static/img/instructions/end.png" style="${style}"></img>`,
-  ],
-  stimulus: ['static/audio/end.wav'],
-  choices: ['Finish experiment'],
-}
 
 //------------------------------------//
 // Define explicit knowledge task.
@@ -224,12 +209,10 @@ var end_screen = {
 // Iteratively construct task.
 var explicit_knowledge = [];
 var machines = 
-jsPsych.randomization.shuffle(["static/img/machines/machine1.png",
-"static/img/machines/machine2.png",
-"static/img/machines/machine3.png",
-"static/img/machines/machine4.png",
-"static/img/machines/machine5.png",
-"static/img/machines/machine6.png"]);
+jsPsych.randomization.shuffle(["img/machines/machine1.png",
+"img/machines/machine2.png",
+"img/machines/machine5.png",
+"img/machines/machine6.png"]);
 
 for (let i = 0; i < 6; i++) {
 
@@ -255,7 +238,6 @@ for (let i = 0; i < 6; i++) {
     explicit_knowledge.push(explicit_trial);
 
   };
-
 
 
 //---------------------------------------//
