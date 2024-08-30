@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Slot Machine Game</title>
 
   <!-- Load libraries -->
-  <script src="lib/jquery-3.3.1/jquery.min.js"></script>
-  <script src="lib/jspsych-6.1.0/jspsych.js"></script>
+  <!-- Load jQuery -->
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+  <!-- Load jsPsych -->
+  <script src="https://cdn.jsdelivr.net/npm/jspsych@6.1.0/jspsych.min.js"></script>
 
   <!-- Load pavlovia requirements 
   <script src="lib/jspsych-pavlovia-3.0.0.js"></script> -->
@@ -32,10 +36,9 @@
   <link rel="stylesheet" href="css/arcade.min.css">
 
 </head>
+
 <body></body>
 <script>
-
-
   //------------------------------------//
   // Section 1: Set up
   //------------------------------------//
@@ -62,7 +65,7 @@
 
   // Display alert message on back/refresh.
   // https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onbeforeunload
-  function verify_unload(e){
+  function verify_unload(e) {
     e.preventDefault();
     (e || window.event).returnValue = null;
     return null;
@@ -80,30 +83,30 @@
   //------------------------------------//
 
   // Define timeline
-var timeline = [];
-//timeline = timeline.concat(pavlovia_init);                // Connect to Pavlovia
-timeline = timeline.concat(fullscreen);                   // Fullscreen enter
-timeline = timeline.concat(beep_test);                    // Audio test (part 1)
-timeline = timeline.concat(audio_test_1);                 // Audio test (part 2)
-timeline = timeline.concat(audio_test_2);                 // Audio test (part 3)
-timeline = timeline.concat(instructions_loop_01);         // Instructions (block 1)
-timeline = timeline.concat(instructions_loop_02);         // Instructions (block 2)
-timeline = timeline.concat(instructions_loop_03);         // Instructions (block 3)
-timeline = timeline.concat(ready);                        // Ready screen
-
-// Main experiment trials with explicit knowledge task every 20 trials
-for (let i = 0; i < fcp_trials.length; i++) {
-  timeline.push(fcp_trials[i]);
-  if ((i + 1) % 20 === 0 && explicit_knowledge.length > 0) {
-    timeline = timeline.concat(explicit_knowledge);
+  var timeline = [];
+  //timeline = timeline.concat(pavlovia_init);                // Connect to Pavlovia
+  //timeline = timeline.concat(fullscreen); // Fullscreen enter */
+  timeline = timeline.concat(beep_test); // Audio test (part 1)
+  timeline = timeline.concat(audio_test_1); // Audio test (part 2)
+  timeline = timeline.concat(audio_test_2); // Audio test (part 3)
+  timeline = timeline.concat(instructions_loop_01); // Instructions (block 1)
+  timeline = timeline.concat(instructions_loop_02); // Instructions (block 2)
+  timeline = timeline.concat(instructions_loop_03); // Instructions (block 3)
+  // timeline = timeline.concat(ready); // Ready screen */
+  console.log(timeline);
+  // Main experiment trials with explicit knowledge task every 20 trials
+  for (let i = 0; i < fcp_trials.length; i++) {
+    timeline.push(fcp_trials[i]);
+    if ((i + 1) % 20 === 0 && explicit_knowledge.length > 0) {
+      timeline = timeline.concat(explicit_knowledge);
+    }
   }
-}
 
-timeline = timeline.concat(finished);                     // Finished p1 screen
-timeline = timeline.concat(explicit_instructions);        // Explicit knowledge instructions
-timeline = timeline.concat(explicit_knowledge);           // Test of explicit knowledge
-//timeline = timeline.concat(pavlovia_finish);              // Disconnect from Pavlovia
-timeline = timeline.concat(end_screen);                   // End screen
+  //timeline = timeline.concat(finished); // Finished p1 screen
+  timeline = timeline.concat(explicit_instructions); // Explicit knowledge instructions
+  timeline = timeline.concat(explicit_knowledge); // Test of explicit knowledge
+  //timeline = timeline.concat(pavlovia_finish);              // Disconnect from Pavlovia
+  //timeline = timeline.concat(end_screen); // End screen
 
   //------------------------------------//
   // Section 3: Present experiment
@@ -113,32 +116,43 @@ timeline = timeline.concat(end_screen);                   // End screen
     timeline: timeline,
     show_progress_bar: true,
     preload_images: preload_images,
-    on_trial_start: function(data){
-      
+    on_trial_start: function (data) {
+
       // add subject id
-      jsPsych.data.get().addToLast({subject_id: urlvar.subject_ID});
+      jsPsych.data.get().addToLast({
+        subject_id: urlvar.subject_ID
+      });
 
       // add task version
-      jsPsych.data.get().addToAll({task_version: 'voc_e2' });
+      jsPsych.data.get().addToAll({
+        task_version: 'voc_e2'
+      });
 
       // add interactions
       var interaction_data = jsPsych.data.getInteractionData();
-      jsPsych.data.get().addToLast({ interactions: interaction_data.json() });
+      jsPsych.data.get().addToLast({
+        interactions: interaction_data.json()
+      });
 
     },
-    on_finish: function() {
+    on_finish: function () {
 
       // Remove requirement to verify redirect
       window.removeEventListener("beforeunload", verify_unload);
 
       // Add interactions to the data variable
       var interaction_data = jsPsych.data.getInteractionData();
-      jsPsych.data.get().addToLast({interactions: interaction_data.json()});
+      jsPsych.data.get().addToLast({
+        interactions: interaction_data.json()
+      });
 
-      document.body.innerHTML = '<p> <center> Please wait while your data saves. You will be redirected in 10 seconds.  </center> </p>'
-      setTimeout(function () { location.href = final_qualtrics }, 10000)
+      document.body.innerHTML =
+        '<p> <center> Please wait while your data saves. You will be redirected in 10 seconds.  </center> </p>'
+      setTimeout(function () {
+        location.href = final_qualtrics
+      }, 10000)
     }
   })
-
 </script>
+
 </html>

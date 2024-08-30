@@ -124,17 +124,17 @@ var instructions01e = {
 // Practice trials #1.
 var practice01 = {
   type: 'fcp-practice',
-  arcade_colors: ['#EDC948','#46d3c8'],
+  arcade_colors: ['#EDC948', '#46d3c8'],
   correct: 1,
   valid_responses_s2: [37],
   timeline: [
-    {arcade_outcomes: [10,0]},
-    {arcade_outcomes: [10,0]},
-    {arcade_outcomes: [0,10]},
-    {arcade_outcomes: [10,0]},
-    {arcade_outcomes: [10,0]},
+    { arcade_outcomes: [10, 0] },
+    { arcade_outcomes: [10, 0] },
+    { arcade_outcomes: [0, 10] },
+    { arcade_outcomes: [10, 0] },
+    { arcade_outcomes: [10, 0] },
   ],
-  data: {phase: 'practice'}
+  data: { phase: 'practice' }
 }
 
 var instructions02a = {
@@ -200,12 +200,12 @@ var instructions03b = {
 // Practice trials #2.
 var practice02 = {
   type: 'fcp-trial',
-  arcade_colors: ['#EDC948','#46d3c8'],
+  arcade_colors: ['#EDC948', '#46d3c8'],
   arcade_outcomes: [10, 10],
   bonus_offer: 0,
   correct: 1,
   practice_key: 38,
-  data: {phase: 'practice'}
+  data: { phase: 'practice' }
 }
 
 // Instructions block #3.
@@ -221,12 +221,12 @@ var instructions04a = {
 // Practice trials #3.
 var practice03 = {
   type: 'fcp-trial',
-  arcade_colors: ['#EDC948','#46d3c8'],
+  arcade_colors: ['#EDC948', '#46d3c8'],
   arcade_outcomes: [10, 10],
   bonus_offer: 6,
   correct: 1,
   practice_key: 40,
-  data: {phase: 'practice'}
+  data: { phase: 'practice' }
 }
 
 var instructions05a = {
@@ -332,7 +332,7 @@ var explicit_instructions2 = {
   prompt: [
     `<img src="img/instructions/explicit2.png" style="${style}"></img>`,
   ],
-  stimulus: ['static/audio/explicit2.wav'],
+  stimulus: ['audio/explicit2.wav'],
   choices: ['Next'],
 }
 
@@ -354,7 +354,7 @@ var instructions_loop_01 = {
     instructions02c,
     quiz01,
   ],
-  loop_function: function(data) {
+  loop_function: function (data) {
 
     // Extract number of errors.
     const num_errors = data.values().slice(-1)[0].num_errors;
@@ -392,7 +392,7 @@ var instructions_loop_03 = {
     instructions06e,
     quiz02,
   ],
-  loop_function: function(data) {
+  loop_function: function (data) {
 
     // Extract number of errors.
     const num_errors = data.values().slice(-1)[0].num_errors;
