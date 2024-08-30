@@ -117,7 +117,7 @@ try {
       hardCount++;
     } else {
       console.warn('未能分配更多的easy或hard试验类型');
-      break; å
+      break;
     }
   }
 } catch (error) {
