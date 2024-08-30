@@ -83,30 +83,30 @@
   //------------------------------------//
 
   // Define timeline
-  var timeline = [];
-  //timeline = timeline.concat(pavlovia_init);                // Connect to Pavlovia
-  //timeline = timeline.concat(fullscreen); // Fullscreen enter */
-  timeline = timeline.concat(beep_test); // Audio test (part 1)
-  timeline = timeline.concat(audio_test_1); // Audio test (part 2)
-  timeline = timeline.concat(audio_test_2); // Audio test (part 3)
-  timeline = timeline.concat(instructions_loop_01); // Instructions (block 1)
-  timeline = timeline.concat(instructions_loop_02); // Instructions (block 2)
-  timeline = timeline.concat(instructions_loop_03); // Instructions (block 3)
-  // timeline = timeline.concat(ready); // Ready screen */
-  console.log(timeline);
-  // Main experiment trials with explicit knowledge task every 20 trials
-  for (let i = 0; i < fcp_trials.length; i++) {
-    timeline.push(fcp_trials[i]);
-    if ((i + 1) % 20 === 0 && explicit_knowledge.length > 0) {
-      timeline = timeline.concat(explicit_knowledge);
-    }
-  }
+var timeline = [];
+//timeline = timeline.concat(pavlovia_init);                // Connect to Pavlovia
+timeline = timeline.concat(fullscreen);                   // Fullscreen enter
+timeline = timeline.concat(beep_test);                    // Audio test (part 1)
+timeline = timeline.concat(audio_test_1);                 // Audio test (part 2)
+timeline = timeline.concat(audio_test_2);                 // Audio test (part 3)
+timeline = timeline.concat(instructions_loop_01);         // Instructions (block 1)
+timeline = timeline.concat(instructions_loop_02);         // Instructions (block 2)
+timeline = timeline.concat(instructions_loop_03);         // Instructions (block 3)
+timeline = timeline.concat(ready);                        // Ready screen
 
-  //timeline = timeline.concat(finished); // Finished p1 screen
-  timeline = timeline.concat(explicit_instructions); // Explicit knowledge instructions
-  timeline = timeline.concat(explicit_knowledge); // Test of explicit knowledge
-  //timeline = timeline.concat(pavlovia_finish);              // Disconnect from Pavlovia
-  //timeline = timeline.concat(end_screen); // End screen
+// Main experiment trials with explicit knowledge task every 20 trials
+for (let i = 0; i < fcp_trials.length; i++) {
+  timeline.push(fcp_trials[i]);
+  if ((i + 1) % 20 === 0 && explicit_knowledge.length > 0) {
+    timeline = timeline.concat(explicit_knowledge);
+  }
+}
+
+timeline = timeline.concat(finished);                     // Finished p1 screen
+timeline = timeline.concat(explicit_instructions);        // Explicit knowledge instructions
+timeline = timeline.concat(explicit_knowledge);           // Test of explicit knowledge
+//timeline = timeline.concat(pavlovia_finish);              // Disconnect from Pavlovia
+timeline = timeline.concat(end_screen);                   // End screen
 
   //------------------------------------//
   // Section 3: Present experiment
@@ -115,6 +115,7 @@
   jsPsych.init({
     timeline: timeline,
     show_progress_bar: true,
+    use_webaudio:false,
     preload_images: preload_images,
     on_trial_start: function (data) {
 
