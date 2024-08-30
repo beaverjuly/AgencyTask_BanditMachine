@@ -107,16 +107,21 @@ const trialTypes = [];
 let easyCount = 0;
 let hardCount = 0;
 
-for (let i = 0; i < 180; i++) {
-  if (i % 2 === 0 && easyCount < easyChangePoints.length) {
-    trialTypes.push('easy');
-    easyCount++;
-  } else if (hardCount < hardChangePoints.length) {
-    trialTypes.push('hard');
-    hardCount++;
+try {
+  for (let i = 0; i < 180; i++) {
+    if (i % 2 === 0 && easyCount < easyChangePoints.length) {
+      trialTypes.push('easy');
+      easyCount++;
+    } else if (hardCount < hardChangePoints.length) {
+      trialTypes.push('hard');
+      hardCount++;
+    } else {
+      console.warn('未能分配更多的easy或hard试验类型');
+      break;
+    }
   }
-
-  if (trialTypes.length >= 180) break;
+} catch (error) {
+  console.error(error);
 }
 
 // Define block structure.
