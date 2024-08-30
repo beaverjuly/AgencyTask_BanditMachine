@@ -1,10 +1,16 @@
 <!DOCTYPE html>
 <html>
 
+
 <head>
   <title>Slot Machine Game</title>
 
   <!-- Load libraries -->
+  <!-- Load jQuery -->
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+  <!-- Load jsPsych -->
+  <script src="https://cdn.jsdelivr.net/npm/jspsych@6.1.0/jspsych.min.js"></script>
   <!-- Load jQuery -->
   <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
@@ -37,6 +43,7 @@
 
 </head>
 
+
 <body></body>
 <script>
   //------------------------------------//
@@ -65,6 +72,7 @@
 
   // Display alert message on back/refresh.
   // https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onbeforeunload
+  function verify_unload(e) {
   function verify_unload(e) {
     e.preventDefault();
     (e || window.event).returnValue = null;
@@ -118,12 +126,20 @@
     preload_images: preload_images,
     on_trial_start: function (data) {
 
+    on_trial_start: function (data) {
+
       // add subject id
+      jsPsych.data.get().addToLast({
+        subject_id: urlvar.subject_ID
+      });
       jsPsych.data.get().addToLast({
         subject_id: urlvar.subject_ID
       });
 
       // add task version
+      jsPsych.data.get().addToAll({
+        task_version: 'voc_e2'
+      });
       jsPsych.data.get().addToAll({
         task_version: 'voc_e2'
       });
@@ -133,8 +149,12 @@
       jsPsych.data.get().addToLast({
         interactions: interaction_data.json()
       });
+      jsPsych.data.get().addToLast({
+        interactions: interaction_data.json()
+      });
 
     },
+    on_finish: function () {
     on_finish: function () {
 
       // Remove requirement to verify redirect
@@ -145,7 +165,15 @@
       jsPsych.data.get().addToLast({
         interactions: interaction_data.json()
       });
+      jsPsych.data.get().addToLast({
+        interactions: interaction_data.json()
+      });
 
+      document.body.innerHTML =
+        '<p> <center> Please wait while your data saves. You will be redirected in 10 seconds.  </center> </p>'
+      setTimeout(function () {
+        location.href = final_qualtrics
+      }, 10000)
       document.body.innerHTML =
         '<p> <center> Please wait while your data saves. You will be redirected in 10 seconds.  </center> </p>'
       setTimeout(function () {
@@ -154,5 +182,6 @@
     }
   })
 </script>
+
 
 </html>
